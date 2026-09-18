@@ -15,7 +15,7 @@ migrate((app) => {
     new TextField({ name: "genres", max: 500 }),
     new TextField({ name: "books", max: 1000 }),
     new TextField({ name: "bio", max: 1500 }),
-    new TextField({ name: "avatar", max: 16 })
+    new TextField({ name: "avatarEmoji", max: 16 })
   );
   app.save(users);
 
@@ -82,7 +82,7 @@ migrate((app) => {
   }
   try {
     const users = app.findCollectionByNameOrId("users");
-    for (const field of ["displayName","age","city","genres","books","bio","avatar"]) {
+    for (const field of ["displayName","age","city","genres","books","bio","avatarEmoji"]) {
       users.fields.removeByName(field);
     }
     app.save(users);
