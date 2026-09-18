@@ -19,7 +19,7 @@ migrate((app) => {
   );
   app.save(users);
 
-  const likes = new BaseCollection("likes");
+  const likes = new Collection({ type: "base", name: "likes" });
   likes.listRule = 'fromUser = @request.auth.id || toUser = @request.auth.id';
   likes.viewRule = 'fromUser = @request.auth.id || toUser = @request.auth.id';
   likes.createRule = 'fromUser = @request.auth.id && toUser != @request.auth.id';
@@ -35,7 +35,7 @@ migrate((app) => {
   ];
   app.save(likes);
 
-  const messages = new BaseCollection("messages");
+  const messages = new Collection({ type: "base", name: "messages" });
   messages.listRule = 'sender = @request.auth.id || receiver = @request.auth.id';
   messages.viewRule = 'sender = @request.auth.id || receiver = @request.auth.id';
   messages.createRule = 'sender = @request.auth.id && receiver != @request.auth.id';
@@ -53,7 +53,7 @@ migrate((app) => {
   ];
   app.save(messages);
 
-  const posts = new BaseCollection("posts");
+  const posts = new Collection({ type: "base", name: "posts" });
   posts.listRule = '@request.auth.id != ""';
   posts.viewRule = '@request.auth.id != ""';
   posts.createRule = 'author = @request.auth.id';
