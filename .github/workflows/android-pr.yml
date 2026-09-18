@@ -21,16 +21,12 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: ''
       - name: Install Android SDK packages
-        run: |
-          SDKMANAGER="$(find /usr/local/lib/android/sdk/cmdline-tools -type f -name sdkmanager 2>/dev/null | head -1)"
-          if [ -z "$SDKMANAGER" ]; then
-            echo "sdkmanager not found"
-            find /usr/local/lib/android/sdk -maxdepth 4 -type f | head -80 || true
-            exit 1
-          fi
-          yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
       - uses: actions/upload-artifact@v4
