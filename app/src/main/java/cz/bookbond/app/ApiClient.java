@@ -155,7 +155,7 @@ public class ApiClient {
                     .put("genres", genres.trim())
                     .put("books", books.trim())
                     .put("bio", "Hledám někoho, s kým se dá mluvit o knihách.")
-                    .put("avatar", "📚");
+                    .put("avatarEmoji", "📚");
             request("POST", "/api/collections/users/records", b);
             JSONObject login = request("POST", "/api/collections/users/auth-with-password",
                     new JSONObject().put("identity", email.trim()).put("password", password));
@@ -207,7 +207,7 @@ public class ApiClient {
         JSONObject b = new JSONObject();
         try {
             b.put("displayName", name.trim()).put("age", age).put("city", city.trim())
-                    .put("genres", genres.trim()).put("books", books.trim()).put("bio", bio.trim()).put("avatar", avatar.trim());
+                    .put("genres", genres.trim()).put("books", books.trim()).put("bio", bio.trim()).put("avatarEmoji", avatar.trim());
         } catch (Exception ignored) {}
         async(() -> {
             JSONObject rec = request("PATCH", "/api/collections/users/records/" + userId(), b);
