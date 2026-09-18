@@ -18,7 +18,7 @@ services:
     depends_on:
       - pocketbase
     environment:
-      DOMAIN: \${DOMAIN:-:80}
+      DOMAIN: ${DOMAIN:-:80}
     ports:
       - "80:80"
       - "443:443"
