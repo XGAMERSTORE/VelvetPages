@@ -1,6 +1,8 @@
-name: Android PR Build
+name: Android Build
 
 on:
+  push:
+    branches: [ bookbond-app ]
   pull_request:
     branches: [ main ]
 
