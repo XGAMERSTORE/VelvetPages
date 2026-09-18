@@ -32,7 +32,7 @@ for who in ("Alice","Bob"):
         "email":email,"password":pw,"passwordConfirm":pw,
         "displayName":who,"age":25,"city":"Ostrava",
         "genres":"fantasy, krimi","books":"Narnie, Zaklinac",
-        "bio":"Testovaci ctenar","avatar":"📚"
+        "bio":"Testovaci ctenar","avatarEmoji":"📚"
     })
     _,auth=req("POST","/api/collections/users/auth-with-password",{"identity":email,"password":pw})
     users.append((rec["id"],auth["token"]))
