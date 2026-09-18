@@ -126,7 +126,8 @@ public class ApiClient {
     }
 
     private static String q(String value) {
-        return URLEncoder.encode(value, StandardCharsets.UTF_8);
+        try { return URLEncoder.encode(value, "UTF-8"); }
+        catch (Exception ignored) { return value; }
     }
 
     public void ping(Callback cb) {
