@@ -48,8 +48,8 @@ migrate((app) => {
     new BoolField({ name: "read" })
   );
   messages.indexes = [
-    "CREATE INDEX idx_messages_sender_receiver_created ON messages (sender, receiver, created)",
-    "CREATE INDEX idx_messages_receiver_created ON messages (receiver, created)"
+    "CREATE INDEX idx_messages_sender_receiver ON messages (sender, receiver)",
+    "CREATE INDEX idx_messages_receiver ON messages (receiver)"
   ];
   app.save(messages);
 
@@ -66,7 +66,6 @@ migrate((app) => {
     new TextField({ name: "text", required: true, min: 1, max: 3000 })
   );
   posts.indexes = [
-    "CREATE INDEX idx_posts_created ON posts (created)",
     "CREATE INDEX idx_posts_author ON posts (author)"
   ];
   app.save(posts);
