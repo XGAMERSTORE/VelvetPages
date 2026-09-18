@@ -1,0 +1,26 @@
+name: Backend Smoke Test
+
+on:
+  push:
+    branches: [ bookbond-app ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build PocketBase image
+        run: docker build -t bookbond-backend ./backend
+      - name: Start backend
+        run: docker run -d --name bookbond-backend -p 8090:8090 bookbond-backend
+      - name: Exercise accounts, likes, messages and feed
+        run: python3 backend/smoke_test.py
+      - name: Print server logs on failure
+        if: failure()
+        run: docker logs bookbond-backend || true
