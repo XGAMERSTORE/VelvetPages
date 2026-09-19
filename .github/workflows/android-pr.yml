@@ -1,6 +1,8 @@
-name: Android PR Build
+name: Android Build
 
 on:
+  push:
+    branches: [ bookbond-app ]
   pull_request:
     branches: [ main ]
 
@@ -19,8 +21,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
-      - uses: android-actions/setup-android@v3
-      - name: Install Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: ''
+      - name: Install Android SDK packages
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug

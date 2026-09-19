@@ -1,0 +1,32 @@
+services:
+  pocketbase:
+    build:
+      context: .
+      args:
+        PB_VERSION: "0.40.4"
+    restart: unless-stopped
+    volumes:
+      - ./data:/pb/pb_data
+    expose:
+      - "8090"
+    ports:
+      - "8090:8090"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - pocketbase
+    environment:
+      DOMAIN: ${DOMAIN:-:80}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

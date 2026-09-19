@@ -1,0 +1,11 @@
+<resources>
+    <color name="cream">#FBF6EF</color>
+    <color name="paper">#FFFDF9</color>
+    <color name="wine">#6D2839</color>
+    <color name="wine_dark">#4A1826</color>
+    <color name="rose">#C9828E</color>
+    <color name="gold">#B98C4A</color>
+    <color name="ink">#2D2527</color>
+    <color name="muted">#7B6D70</color>
+    <color name="line">#EADFD3</color>
+</resources>
