@@ -1,0 +1,15 @@
+Velvet Companion v0.3 third-party assets
+
+Three.js
+Copyright © 2010-2026 three.js authors
+License: MIT
+https://github.com/mrdoob/three.js
+
+Human GLB model
+Source: UMRAM-Bilkent/supine-human-model assets/human.glb
+Original CC0 character by Quaternius.
+License: CC0 1.0 / public domain.
+https://github.com/UMRAM-Bilkent/supine-human-model
+https://quaternius.com
+
+The app downloads and bundles these assets during the GitHub Actions build.
