@@ -1,4 +1,4 @@
-name: Velvet Companion v0.4.1 APK
+name: Velvet Companion v0.4.2 APK
 
 on:
   push:
@@ -39,17 +39,22 @@ jobs:
           test -s "$ASSETS/OrbitControls.js"
           test -s "$ASSETS/Michelle.glb"
 
-      - name: Inject v0.4.1 runtime fixes
+      - name: Inject v0.4.2 runtime fixes
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path('velvet-v04/app/src/main/assets/index.html')
           s = p.read_text(encoding='utf-8')
-          tag = '<script src="fix-v041.js"></script>'
-          if tag not in s:
-              s = s.replace('</body>', tag + '\n</body>')
+          tags = [
+              '<script src="fix-v041.js"></script>',
+              '<script src="fix-v042.js"></script>'
+          ]
+          for tag in tags:
+              if tag not in s:
+                  s = s.replace('</body>', tag + '\n</body>')
           p.write_text(s, encoding='utf-8')
-          assert tag in p.read_text(encoding='utf-8')
+          for tag in tags:
+              assert tag in p.read_text(encoding='utf-8')
           PY
 
       - uses: gradle/actions/setup-gradle@v4
@@ -62,5 +67,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: VelvetCompanion-v0.4.1-APK
+          name: VelvetCompanion-v0.4.2-APK
           path: velvet-v04/app/build/outputs/apk/debug/app-debug.apk
