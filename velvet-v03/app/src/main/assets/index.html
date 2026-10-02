@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+<title>Velvet Companion</title>
+<style>
+:root{--bg:#07060b;--glass:rgba(17,12,24,.86);--glass2:rgba(30,20,39,.88);--line:rgba(255,255,255,.10);--text:#fff;--muted:#bcaec8;--accent:#c462ff;--accent2:#ff5fa9;--danger:#ff5d76}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text)}
+#stage{position:fixed;inset:0;z-index:0}canvas{display:block;width:100%;height:100%}
+.top{position:fixed;z-index:20;left:0;right:0;top:0;padding:10px 12px 6px;display:flex;align-items:flex-start;gap:10px;background:linear-gradient(180deg,rgba(7,6,11,.92),rgba(7,6,11,.42),transparent);pointer-events:none}
+.brand{flex:1;min-width:0}.brand h1{font-size:20px;letter-spacing:3px;margin:0;font-weight:650}.status{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tabs{display:flex;gap:5px;pointer-events:auto}.tab{border:1px solid var(--line);background:rgba(18,13,25,.76);color:#eee;border-radius:13px;padding:8px 9px;font-size:11px;font-weight:650}.tab.active{background:linear-gradient(135deg,rgba(196,98,255,.33),rgba(255,95,169,.22));border-color:rgba(211,128,255,.55)}
+.badge18{display:none;margin-left:5px;color:#fff;background:linear-gradient(135deg,#b12459,#6d285d);border-radius:7px;padding:2px 5px;font-size:9px;letter-spacing:.4px}.badge18.on{display:inline-block}
+.panel{position:fixed;z-index:30;left:12px;right:12px;top:74px;max-height:66vh;overflow:auto;padding:14px;border-radius:22px;background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--line);box-shadow:0 18px 55px rgba(0,0,0,.45);display:none}.panel.show{display:block}.panel h2{font-size:16px;margin:0 0 5px}.panel .sub{font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.4}.panelClose{float:right;border:0;background:transparent;color:#ddd;font-size:20px;padding:0 4px}
+.group{padding:11px 0;border-top:1px solid var(--line)}.group:first-of-type{border-top:0}.labelrow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;margin-bottom:6px}.value{color:#e1baff;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:#c462ff}input[type=color]{width:44px;height:32px;border:0;border-radius:10px;background:transparent}input[type=text],input[type=password],select{width:100%;border:1px solid var(--line);background:#15101c;color:white;border-radius:13px;padding:11px 12px;outline:none;margin-top:5px}select option{background:#17111e}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.btn{border:1px solid var(--line);background:#1a1322;color:#fff;border-radius:13px;padding:10px 12px;font-size:12px;font-weight:650}.btn.primary{background:linear-gradient(135deg,#8f3dbe,#b32f77);border-color:transparent}.btn.soft{background:rgba(196,98,255,.12)}.btn.danger{color:#ff9aad}.presetRow{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.presetRow .btn{padding:9px 6px;font-size:11px}
+.switchRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}.switch{position:relative;width:46px;height:26px;border-radius:20px;background:#32273c;flex:none}.switch input{display:none}.switch i{position:absolute;width:20px;height:20px;border-radius:50%;left:3px;top:3px;background:white;transition:.2s}.switch input:checked+i{transform:translateX(20px);background:#ffc7ec}.switch:has(input:checked){background:linear-gradient(135deg,#9844c4,#c73377)}
+.chatWrap{position:fixed;z-index:18;left:12px;right:12px;bottom:70px;pointer-events:none}.chatLog{display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-height:24vh;overflow:hidden}.bubble{max-width:84%;padding:10px 13px;border:1px solid var(--line);border-radius:15px;font-size:13px;line-height:1.35;background:rgba(18,13,25,.80);backdrop-filter:blur(12px);pointer-events:auto;box-shadow:0 8px 25px rgba(0,0,0,.24)}.bubble.user{align-self:flex-end;background:rgba(106,47,125,.72)}.bubble.ai{align-self:flex-start}.bubble.system{font-size:11px;color:var(--muted);background:rgba(15,12,20,.72)}
+.composer{position:fixed;z-index:20;left:0;right:0;bottom:0;padding:8px 12px max(10px,env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;background:linear-gradient(0deg,rgba(7,6,11,.98),rgba(7,6,11,.86),transparent)}.composer input{flex:1;border:1px solid var(--line);background:rgba(31,22,40,.92);color:white;border-radius:16px;padding:13px 14px;font-size:14px;outline:none;min-width:0}.send{width:48px;height:44px;border:0;border-radius:15px;background:linear-gradient(135deg,#9e45ca,#cc3b81);color:white;font-size:19px;font-weight:bold}.mini{width:42px;height:44px;border:1px solid var(--line);border-radius:15px;background:#17111e;color:white;font-size:16px}
+.loading{position:fixed;z-index:10;left:50%;top:47%;transform:translate(-50%,-50%);padding:10px 15px;border-radius:14px;background:rgba(20,14,27,.82);border:1px solid var(--line);font-size:12px;color:var(--muted)}
+#modelError{display:none;color:#ff9bab;max-width:80vw;text-align:center;line-height:1.4}.tiny{font-size:10px;color:#9c8fa6;line-height:1.4}.sectionTitle{font-size:11px;color:#e1baff;text-transform:uppercase;letter-spacing:1.1px;margin:3px 0 7px}.aiState{font-size:11px;color:#b9a7c5;margin-top:7px}.memoryCount{font-size:10px;color:#9e90a9}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="loading" class="loading">Načítám skutečný 3D model…</div>
+<div id="modelError" class="loading"></div>
+
+<div class="top">
+  <div class="brand"><h1>VELVET <span id="adultBadge" class="badge18">18+</span></h1><div id="status" class="status">3D companion • startuji</div></div>
+  <div class="tabs">
+    <button class="tab" data-panel="appearance">VZHLED</button>
+    <button class="tab" data-panel="body">TĚLO</button>
+    <button class="tab" data-panel="ai">AI</button>
+  </div>
+</div>
+
+<div id="appearance" class="panel">
+  <button class="panelClose" onclick="closePanels()">×</button><h2>Vzhled</h2><div class="sub">Barvy se aplikují na pojmenované materiály modelu. Tlačítkem otočení opravíš směr, pokud je model zrovna zády.</div>
+  <div class="group"><div class="grid2"><button class="btn soft" onclick="flipModel()">↻ OTOČIT MODEL</button><button class="btn soft" onclick="resetCamera()">⌖ RESET KAMERY</button></div></div>
+  <div class="group"><div class="labelrow"><span>Odstín pleti</span><input id="skinColor" type="color" value="#e8bca6"></div><div class="labelrow"><span>Vlasy</span><input id="hairColor" type="color" value="#341f24"></div><div class="labelrow"><span>Outfit</span><input id="outfitColor" type="color" value="#6b1f63"></div><button class="btn primary" style="width:100%;margin-top:6px" onclick="applyAppearance()">POUŽÍT BARVY</button></div>
+  <div class="group"><div class="sectionTitle">Kamera</div><div class="tiny">Prstem táhni pro otočení. Dvěma prsty přibližuj/oddaluj.</div></div>
+</div>
+
+<div id="body" class="panel">
+  <button class="panelClose" onclick="closePanels()">×</button><h2>Proporce</h2><div class="sub">Parametry mění skutečnou 3D kostru a měřítko modelu. Limity jsou schválně omezené, aby se mesh nerozpadal.</div>
+  <div class="presetRow"><button class="btn" onclick="preset('petite')">PETITE</button><button class="btn" onclick="preset('slim')">SLIM</button><button class="btn" onclick="preset('balanced')">BALANCED</button><button class="btn" onclick="preset('curvy')">CURVY</button><button class="btn" onclick="preset('tall')">TALL</button><button class="btn" onclick="preset('strong')">STRONG</button></div>
+  <div id="sliderHost"></div>
+  <div class="group"><button class="btn danger" style="width:100%" onclick="preset('balanced')">RESET PROPORCÍ</button></div>
+</div>
+
+<div id="ai" class="panel">
+  <button class="panelClose" onclick="closePanels()">×</button><h2>AI & osobnost</h2><div class="sub">AI rozumí běžným větám a současně vybírá pohyb a emoci postavy. Klíč se ukládá jen lokálně v aplikaci.</div>
+  <div class="group">
+    <div class="switchRow"><div><b>Adult mode</b><div class="tiny">Dospělejší romantika, flirt a témata sexuality v mezích pravidel AI poskytovatele.</div></div><label class="switch"><input id="adultMode" type="checkbox"><i></i></label></div>
+    <div class="switchRow"><div><b>Hlas</b><div class="tiny">Velvet přečte odpověď systémovým TTS.</div></div><label class="switch"><input id="voiceMode" type="checkbox" checked><i></i></label></div>
+  </div>
+  <div class="group"><div class="sectionTitle">Osobnost</div><select id="persona"><option value="gothic playful">Gothic / playful</option><option value="warm romantic">Warm / romantic</option><option value="shy sweet">Shy / sweet</option><option value="confident teasing">Confident / teasing</option><option value="calm caring">Calm / caring</option></select></div>
+  <div class="group"><div class="sectionTitle">OpenAI Responses API</div><input id="apiKey" type="password" autocomplete="off" placeholder="API key…"><input id="modelName" type="text" value="gpt-6-luna" placeholder="Model"><button class="btn primary" style="width:100%;margin-top:8px" onclick="saveAiSettings()">ULOŽIT AI</button><div id="aiState" class="aiState">AI konfigurace se načítá…</div></div>
+  <div class="group"><div class="grid2"><button class="btn soft" onclick="testAI()">TEST AI</button><button class="btn danger" onclick="clearMemory()">SMAZAT PAMĚŤ</button></div><div id="memoryCount" class="memoryCount"></div></div>
+  <div class="group"><div class="tiny">Bez API klíče zůstane aktivní lokální fallback pro pohyby a pár jednoduchých reakcí. Skutečná generativní konverzace se zapne po uložení API klíče.</div></div>
+</div>
+
+<div class="chatWrap"><div id="chatLog" class="chatLog"></div></div>
+<div class="composer"><button class="mini" onclick="randomPose()">✦</button><input id="message" type="text" autocomplete="off" placeholder="Řekni jí cokoli…"><button id="send" class="send">➤</button></div>
+
+<script src="three.min.js"></script>
+<script src="GLTFLoader.js"></script>
+<script src="OrbitControls.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const statusEl=$('status'), chatLog=$('chatLog'), input=$('message');
+let scene,camera,renderer,controls,avatar,container,clock;
+let bones=[], boneMap={}, materials=[];
+let modelFacing=Math.PI, baseAvatarScale=1;
+let pose={sit:false,z:0,yaw:0};
+let gesture={name:'idle',start:0,duration:0};
+let history=[];
+let adultMode=false, voiceMode=true;
+let modelLoaded=false;
+
+const propDefs={
+ height:{label:'Výška',min:.88,max:1.14,val:1},
+ width:{label:'Celková stavba',min:.86,max:1.16,val:1},
+ head:{label:'Velikost hlavy',min:.90,max:1.10,val:1},
+ shoulders:{label:'Ramena',min:.86,max:1.18,val:1},
+ chest:{label:'Hrudník',min:.85,max:1.22,val:1},
+ waist:{label:'Pas',min:.80,max:1.20,val:1},
+ hips:{label:'Boky',min:.84,max:1.26,val:1},
+ legs:{label:'Délka nohou',min:.90,max:1.14,val:1},
+ thighs:{label:'Stehna',min:.84,max:1.22,val:1},
+ arms:{label:'Paže',min:.86,max:1.18,val:1}
+};
+const props={}; Object.keys(propDefs).forEach(k=>props[k]=propDefs[k].val);
+
+function buildSliders(){
+ const host=$('sliderHost'); host.innerHTML='';
+ for(const [key,d] of Object.entries(propDefs)){
+  const g=document.createElement('div'); g.className='group';
+  const pct=Math.round(props[key]*100);
+  g.innerHTML=`<div class="labelrow"><span>${d.label}</span><span id="v_${key}" class="value">${pct}%</span></div><input id="s_${key}" type="range" min="0" max="100" value="${toSlider(key,props[key])}">`;
+  host.appendChild(g);
+  g.querySelector('input').addEventListener('input',e=>{props[key]=fromSlider(key,+e.target.value);$('v_'+key).textContent=Math.round(props[key]*100)+'%';saveBody();});
+ }
+}
+function toSlider(k,v){const d=propDefs[k];return Math.round((v-d.min)/(d.max-d.min)*100)}
+function fromSlider(k,v){const d=propDefs[k];return d.min+(d.max-d.min)*(v/100)}
+function saveBody(){localStorage.setItem('velvetBody',JSON.stringify(props))}
+function loadBody(){try{const p=JSON.parse(localStorage.getItem('velvetBody')||'{}');Object.keys(props).forEach(k=>{if(typeof p[k]==='number')props[k]=Math.max(propDefs[k].min,Math.min(propDefs[k].max,p[k]))})}catch(e){}}
+function preset(name){
+ const set=(o)=>{Object.assign(props,o);saveBody();buildSliders()};
+ if(name==='petite')set({height:.91,width:.92,head:1.04,shoulders:.92,chest:.92,waist:.90,hips:.94,legs:.93,thighs:.92,arms:.92});
+ else if(name==='slim')set({height:1,width:.91,head:1,shoulders:.95,chest:.92,waist:.86,hips:.94,legs:1.04,thighs:.88,arms:.90});
+ else if(name==='curvy')set({height:1,width:1.04,head:1,shoulders:1,chest:1.13,waist:.91,hips:1.18,legs:1,thighs:1.14,arms:1.02});
+ else if(name==='tall')set({height:1.11,width:.98,head:.97,shoulders:1.02,chest:1,waist:.96,hips:1.02,legs:1.11,thighs:1,arms:1.03});
+ else if(name==='strong')set({height:1.04,width:1.10,head:1,shoulders:1.14,chest:1.10,waist:1.02,hips:1.07,legs:1.03,thighs:1.12,arms:1.13});
+ else set({height:1,width:1,head:1,shoulders:1,chest:1,waist:1,hips:1,legs:1,thighs:1,arms:1});
+}
+
+function openPanel(name){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));$(name).classList.add('show');document.querySelector(`[data-panel="${name}"]`).classList.add('active')}
+function closePanels(){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{const p=$(t.dataset.panel);if(p.classList.contains('show'))closePanels();else openPanel(t.dataset.panel)}));
+
+function init3D(){
+ scene=new THREE.Scene(); scene.background=new THREE.Color(0x07060b); scene.fog=new THREE.FogExp2(0x07060b,.05);
+ camera=new THREE.PerspectiveCamera(34,innerWidth/innerHeight,.05,100); camera.position.set(0,1.15,4.6);
+ renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); renderer.outputEncoding=THREE.sRGBEncoding; renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap; $('stage').appendChild(renderer.domElement);
+ controls=new THREE.OrbitControls(camera,renderer.domElement); controls.enablePan=false; controls.enableDamping=true; controls.dampingFactor=.08; controls.target.set(0,1.0,0); controls.minDistance=2.2; controls.maxDistance=7; controls.minPolarAngle=.75; controls.maxPolarAngle=1.9;
+ scene.add(new THREE.HemisphereLight(0xcab6ff,0x22182b,1.45)); const key=new THREE.DirectionalLight(0xffd6ed,2.15); key.position.set(2.8,4.8,4); key.castShadow=true; scene.add(key); const rim=new THREE.DirectionalLight(0x985dff,1.25); rim.position.set(-3,2.5,-3); scene.add(rim);
+ const floor=new THREE.Mesh(new THREE.CircleGeometry(2.25,64),new THREE.MeshStandardMaterial({color:0x120d18,roughness:.82,metalness:.08})); floor.rotation.x=-Math.PI/2; floor.position.y=-.012; floor.receiveShadow=true; scene.add(floor);
+ const glow=new THREE.Mesh(new THREE.RingGeometry(.9,1.45,64),new THREE.MeshBasicMaterial({color:0x6b2d82,transparent:true,opacity:.14,side:THREE.DoubleSide})); glow.rotation.x=-Math.PI/2; glow.position.y=.003; scene.add(glow);
+ container=new THREE.Group(); scene.add(container); clock=new THREE.Clock();
+ const loader=new THREE.GLTFLoader();
+ loader.load('human.glb',g=>{
+  avatar=g.scene; container.add(avatar); avatar.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;if(o.material){o.material=o.material.clone();materials.push(o.material)}} if(o.isBone){bones.push(o);o.userData.baseQ=o.quaternion.clone();o.userData.baseScale=o.scale.clone();o.userData.basePos=o.position.clone();}});
+  const box=new THREE.Box3().setFromObject(avatar), size=new THREE.Vector3(); box.getSize(size); baseAvatarScale=1.78/Math.max(.001,size.y); avatar.scale.setScalar(baseAvatarScale); avatar.updateMatrixWorld(true); const box2=new THREE.Box3().setFromObject(avatar), center=new THREE.Vector3(); box2.getCenter(center); avatar.position.x-=center.x; avatar.position.y-=box2.min.y; avatar.position.z-=center.z;
+  buildBoneMap(); modelLoaded=true; $('loading').style.display='none'; statusEl.textContent=`3D online • ${bones.length} kostí • čekám na tebe`; applyAppearance();
+ },xhr=>{if(xhr.total)$('loading').textContent='Načítám 3D model… '+Math.round(xhr.loaded/xhr.total*100)+'%'},err=>{console.error(err);$('loading').style.display='none';$('modelError').style.display='block';$('modelError').textContent='3D model se nepodařilo načíst. Zkontroluj připojení nebo zkus aplikaci restartovat.';statusEl.textContent='3D model • chyba'});
+ addEventListener('resize',onResize); animate();
+}
+function onResize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)}
+function buildBoneMap(){
+ const f=(...rx)=>bones.find(b=>rx.some(r=>r.test((b.name||'').toLowerCase())));
+ boneMap.head=f(/head/); boneMap.neck=f(/neck/); boneMap.hips=f(/hip/,/pelvis/); boneMap.spine=f(/spine(?!.*[23])/,/spine_?01/); boneMap.chest=f(/chest/,/spine_?0?2/,/spine2/,/spine3/);
+ boneMap.lUpperArm=f(/left.*upper.*arm/,/upper.*arm.*l/,/arm.*\.l/,/l_.*arm/); boneMap.rUpperArm=f(/right.*upper.*arm/,/upper.*arm.*r/,/arm.*\.r/,/r_.*arm/);
+ boneMap.lForearm=f(/left.*forearm/,/forearm.*l/,/lower.*arm.*l/,/arm2.*l/); boneMap.rForearm=f(/right.*forearm/,/forearm.*r/,/lower.*arm.*r/,/arm2.*r/);
+ boneMap.lThigh=f(/left.*up.*leg/,/thigh.*l/,/upper.*leg.*l/,/leg.*\.l/); boneMap.rThigh=f(/right.*up.*leg/,/thigh.*r/,/upper.*leg.*r/,/leg.*\.r/);
+ boneMap.lShin=f(/left.*leg/,/calf.*l/,/shin.*l/,/lower.*leg.*l/); boneMap.rShin=f(/right.*leg/,/calf.*r/,/shin.*r/,/lower.*leg.*r/);
+ console.log('bones',bones.map(b=>b.name));
+}
+function resetBoneRotations(){bones.forEach(b=>{if(b.userData.baseQ)b.quaternion.copy(b.userData.baseQ);if(b.userData.basePos)b.position.copy(b.userData.basePos)})}
+function mulScale(b,x,y,z){if(!b||!b.userData.baseScale)return;const s=b.userData.baseScale;b.scale.set(s.x*x,s.y*y,s.z*z)}
+function applyProportions(){
+ if(!avatar)return; container.scale.set(props.width,props.height,props.width); 
+ mulScale(boneMap.head,props.head,props.head,props.head); mulScale(boneMap.chest,props.shoulders*props.chest,1,props.chest); mulScale(boneMap.spine,props.waist,1,props.waist); mulScale(boneMap.hips,props.hips,1,props.hips);
+ [boneMap.lThigh,boneMap.rThigh].forEach(b=>mulScale(b,props.thighs,props.legs,props.thighs)); [boneMap.lShin,boneMap.rShin].forEach(b=>mulScale(b,1,props.legs,1)); [boneMap.lUpperArm,boneMap.rUpperArm,boneMap.lForearm,boneMap.rForearm].forEach(b=>mulScale(b,props.arms,1,props.arms));
+}
+function rot(b,axis,a){if(!b)return;if(axis==='x')b.rotateX(a);else if(axis==='y')b.rotateY(a);else b.rotateZ(a)}
+function applyPose(t){
+ if(!avatar)return; resetBoneRotations(); applyProportions();
+ const idleBob=Math.sin(t*1.35)*.008; container.position.set(0,(pose.sit?-.42:0)+idleBob,pose.z); container.rotation.set(0,modelFacing+pose.yaw,0);
+ if(pose.sit){rot(boneMap.lThigh,'x',-1.15);rot(boneMap.rThigh,'x',-1.15);rot(boneMap.lShin,'x',1.05);rot(boneMap.rShin,'x',1.05)}
+ const g=gesture.name, dt=t-gesture.start;
+ if(g==='wave'){rot(boneMap.rUpperArm,'z',-1.25);rot(boneMap.rForearm,'z',-.55+Math.sin(dt*8)*.45)}
+ else if(g==='smile'){rot(boneMap.head,'z',.04*Math.sin(dt*3))}
+ else if(g==='dance'){container.rotation.z=Math.sin(dt*4)*.08;container.position.x=Math.sin(dt*3)*.12;rot(boneMap.lUpperArm,'z',.55+Math.sin(dt*5)*.3);rot(boneMap.rUpperArm,'z',-.55-Math.sin(dt*5)*.3);rot(boneMap.hips,'y',Math.sin(dt*4)*.18)}
+ else if(g==='jump'){container.position.y+=(Math.max(0,Math.sin(dt*4.2))*.45)}
+ else if(g==='pose'){rot(boneMap.lUpperArm,'z',.85);rot(boneMap.rUpperArm,'z',-.25);rot(boneMap.head,'z',-.12)}
+ else if(g==='look'){rot(boneMap.head,'y',Math.sin(dt*2.2)*.16)}
+ else if(g==='nod'){rot(boneMap.head,'x',Math.sin(dt*6)*.16)}
+ else if(g==='shake'){rot(boneMap.head,'y',Math.sin(dt*6)*.22)}
+ else if(g==='cross_arms'){rot(boneMap.lUpperArm,'z',.75);rot(boneMap.rUpperArm,'z',-.75);rot(boneMap.lForearm,'x',-1.15);rot(boneMap.rForearm,'x',-1.15)}
+ else if(g==='hands_hips'){rot(boneMap.lUpperArm,'z',.55);rot(boneMap.rUpperArm,'z',-.55);rot(boneMap.lForearm,'x',-.85);rot(boneMap.rForearm,'x',-.85)}
+ else if(g==='heart'){rot(boneMap.lUpperArm,'z',1.05);rot(boneMap.rUpperArm,'z',-1.05);rot(boneMap.lForearm,'x',-1.15);rot(boneMap.rForearm,'x',-1.15)}
+ else if(g==='blow_kiss'){rot(boneMap.rUpperArm,'z',-.65);rot(boneMap.rForearm,'x',-1.3);rot(boneMap.head,'z',-.08)}
+ if(gesture.duration>0&&dt>gesture.duration)gesture={name:'idle',start:t,duration:0};
+}
+function animate(){requestAnimationFrame(animate);const t=performance.now()/1000;applyPose(t);controls.update();renderer.render(scene,camera)}
+function setAction(a){a=(a||'idle').toLowerCase();const now=performance.now()/1000;if(a==='sit'){pose.sit=true;gesture={name:'idle',start:now,duration:0}}else if(a==='stand'){pose.sit=false;gesture={name:'idle',start:now,duration:0}}else if(a==='closer'){pose.z=Math.min(1.0,pose.z+.45);gesture={name:'idle',start:now,duration:0}}else if(a==='back'){pose.z=Math.max(-.8,pose.z-.45);gesture={name:'idle',start:now,duration:0}}else if(a==='turn'){pose.yaw+=Math.PI;gesture={name:'idle',start:now,duration:0}}else{const map={wave:3.6,smile:2.4,dance:5,jump:3.4,pose:4,look:3,nod:2.4,shake:2.4,cross_arms:4,hands_hips:4,heart:4,blow_kiss:3.2,idle:0};gesture={name:map[a]!==undefined?a:'idle',start:now,duration:map[a]||0}}statusEl.textContent='3D online • '+actionLabel(a)}
+function actionLabel(a){return({idle:'čekám',wave:'mávám',turn:'otočená',closer:'jdu blíž',back:'ustupuji',sit:'sedím',stand:'stojím',smile:'usmívám se',dance:'tančím',jump:'skáču',pose:'pózuji',look:'dívám se',nod:'kývám',shake:'vrtím hlavou',cross_arms:'ruce založené',hands_hips:'ruce v bok',heart:'srdíčko',blow_kiss:'posílám pusu'})[a]||'reaguji'}
+function flipModel(){modelFacing+=Math.PI}
+function resetCamera(){camera.position.set(0,1.15,4.6);controls.target.set(0,1,0);controls.update()}
+function randomPose(){const a=['wave','smile','dance','pose','look','nod','hands_hips','heart'];setAction(a[Math.floor(Math.random()*a.length)])}
+
+function matKind(mat){const n=((mat.name||'')+' '+(mat.userData&&mat.userData.name||'')).toLowerCase();if(/hair|brow/.test(n))return'hair';if(/skin|face|body|head|hand|leg|arm/.test(n))return'skin';if(/cloth|shirt|dress|top|pants|shoe|outfit|jacket|skirt/.test(n))return'outfit';return'other'}
+function applyAppearance(){const skin=$('skinColor').value,hair=$('hairColor').value,outfit=$('outfitColor').value;let hit=0;materials.forEach(m=>{if(!m.color)return;const k=matKind(m);if(k==='skin'){m.color.set(skin);hit++}else if(k==='hair'){m.color.set(hair);hit++}else if(k==='outfit'){m.color.set(outfit);hit++}m.needsUpdate=true});localStorage.setItem('velvetAppearance',JSON.stringify({skin,hair,outfit}));statusEl.textContent=hit?'3D online • vzhled změněn':'3D online • model nemá pojmenované materiály'}
+function loadAppearance(){try{const a=JSON.parse(localStorage.getItem('velvetAppearance')||'{}');if(a.skin)$('skinColor').value=a.skin;if(a.hair)$('hairColor').value=a.hair;if(a.outfit)$('outfitColor').value=a.outfit}catch(e){}}
+
+function bubble(text,cls='ai'){const el=document.createElement('div');el.className='bubble '+cls;el.textContent=text;chatLog.appendChild(el);while(chatLog.children.length>5)chatLog.removeChild(chatLog.firstChild);return el}
+function addHistory(role,text){history.push({role,content:text});if(history.length>20)history=history.slice(-20);localStorage.setItem('velvetHistory',JSON.stringify(history));updateMemoryCount()}
+function loadHistory(){try{history=JSON.parse(localStorage.getItem('velvetHistory')||'[]');if(!Array.isArray(history))history=[]}catch(e){history=[]}updateMemoryCount()}
+function updateMemoryCount(){const e=$('memoryCount');if(e)e.textContent='Paměť: '+history.length+' zpráv'}
+function clearMemory(){history=[];localStorage.removeItem('velvetHistory');updateMemoryCount();bubble('Paměť konverzace byla vymazána.','system')}
+function recentMemory(){return history.slice(-12)}
+function inferAction(t){t=t.toLowerCase();if(/zamá|máv|wave/.test(t))return'wave';if(/otoč|turn/.test(t))return'turn';if(/blíž|ke mně|pojď sem|closer/.test(t))return'closer';if(/ustup|dozadu|back/.test(t))return'back';if(/sedni|sednout|sit/.test(t))return'sit';if(/vstaň|postav se|stand/.test(t))return'stand';if(/usměj|smile/.test(t))return'smile';if(/tanč|zatancuj|dance/.test(t))return'dance';if(/skoč|jump/.test(t))return'jump';if(/póz|pose/.test(t))return'pose';if(/kýv|nod/.test(t))return'nod';if(/zavrt|nesouhlas|shake/.test(t))return'shake';if(/ruce v bok/.test(t))return'hands_hips';if(/založ.*ruce/.test(t))return'cross_arms';if(/srd(ce|íčko)/.test(t))return'heart';if(/pusu|polib|kiss/.test(t))return'blow_kiss';return'idle'}
+function fallbackReply(msg){const a=inferAction(msg);setAction(a);const replies={wave:'Jasně, mávám ti ♡',turn:'Tak jo, otočím se.',closer:'Už jdu blíž.',back:'Dobře, trochu ustoupím.',sit:'Sednu si.',stand:'Vstávám.',smile:'Takovýhle úsměv? ♡',dance:'Dobře… tak koukej 😏',jump:'Hop!',pose:'Co říkáš na tuhle pózu?',heart:'Pro tebe ♡',blow_kiss:'Mwah ♡',idle:'Slyším tě. Pro plnou konverzační AI mi nastav API klíč v záložce AI.'};return{reply:replies[a]||replies.idle,action:a,emotion:'neutral'}}
+function sendMessage(forceText){const msg=(forceText||input.value).trim();if(!msg)return;input.value='';bubble(msg,'user');addHistory('user',msg);statusEl.textContent='AI • přemýšlím…';$('send').disabled=true;try{if(window.Native&&Native.sendAI){Native.sendAI(msg,adultMode,$('persona').value,JSON.stringify(recentMemory()));return}}catch(e){}handleAI(fallbackReply(msg))}
+function handleAI(r){$('send').disabled=false;if(!r)return;const reply=r.reply||r.message||'…';if(r.action)setAction(r.action);bubble(reply,'ai');addHistory('assistant',reply);statusEl.textContent='3D online • '+(r.emotion||'neutral');if(voiceMode){try{if(window.Native&&Native.speak)Native.speak(reply)}catch(e){}}}
+window.__velvetAiResult=function(payload){let r;try{r=JSON.parse(payload)}catch(e){r={ok:false,message:'Nečitelná AI odpověď.'}};$('send').disabled=false;if(r.ok===false){if(r.type==='need_key'){const last=history.length?history[history.length-1].content:'';const f=fallbackReply(last);bubble(f.reply,'ai');addHistory('assistant',f.reply);openPanel('ai');$('aiState').textContent='AI: chybí API klíč — běží lokální fallback.'}else{bubble(r.message||'AI chyba','system');statusEl.textContent='AI • chyba'}return}handleAI(r)};
+
+function loadNativeConfig(){try{if(window.Native&&Native.getConfig){const c=JSON.parse(Native.getConfig());$('apiKey').value=c.apiKey||'';$('modelName').value=c.model||'gpt-6-luna';voiceMode=c.voice!==false;$('voiceMode').checked=voiceMode;$('aiState').textContent=c.apiKey?'AI: nakonfigurovaná • '+(c.model||'gpt-6-luna'):'AI: bez klíče • lokální fallback';return}}catch(e){}$('aiState').textContent='AI: lokální fallback'}
+function saveAiSettings(){voiceMode=$('voiceMode').checked;try{if(window.Native&&Native.saveConfig)Native.saveConfig($('apiKey').value,$('modelName').value,voiceMode)}catch(e){}$('aiState').textContent=$('apiKey').value.trim()?'AI: uloženo • '+$('modelName').value:'AI: bez klíče • lokální fallback';bubble('AI nastavení uloženo.','system')}
+function testAI(){closePanels();sendMessage('Ahoj Velvet, usměj se na mě a krátce se představ.')}
+$('adultMode').addEventListener('change',e=>{adultMode=e.target.checked;localStorage.setItem('velvetAdult',adultMode?'1':'0');$('adultBadge').classList.toggle('on',adultMode);bubble(adultMode?'Adult mode zapnutý.':'Adult mode vypnutý.','system')});
+$('voiceMode').addEventListener('change',e=>{voiceMode=e.target.checked;saveAiSettings()});
+$('send').addEventListener('click',()=>sendMessage()); input.addEventListener('keydown',e=>{if(e.key==='Enter')sendMessage()});
+
+loadBody();buildSliders();loadAppearance();loadHistory();adultMode=localStorage.getItem('velvetAdult')==='1';$('adultMode').checked=adultMode;$('adultBadge').classList.toggle('on',adultMode);loadNativeConfig();bubble('Ahoj ♡ Jsem Velvet. Můžeš si mě otočit, měnit proporce a mluvit se mnou normálními větami.','ai');init3D();
+</script>
+</body>
+</html>
