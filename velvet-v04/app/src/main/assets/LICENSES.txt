@@ -1,0 +1,11 @@
+Velvet Companion v0.4 third-party assets
+
+Three.js and bundled example assets are sourced from the three.js project:
+https://github.com/mrdoob/three.js
+License: MIT
+Copyright (c) 2010-2026 three.js authors
+
+Michelle.glb is bundled from the three.js examples repository path:
+examples/models/gltf/Michelle.glb
+
+Puter.js is loaded at runtime from https://js.puter.com/v2/ and is not bundled into this APK.
